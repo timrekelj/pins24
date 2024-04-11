@@ -1,0 +1,16 @@
+= , && || ! == != > < >= <= + - * / % ^ ( )
+#= , && || ! == != > < >= <= + - * / % ^ ( )
+'c' '\\' '\'' '\n' '\3A' '\3F'
+12345 67890 0095
+"hello world"
+fun var if then else while do let in end
+_identifierji_ ter _1234567890_ so imena
+"hello\\n\nworld"
+
+fun test(int a, int b)
+    var a = 5
+    var b = 10
+    var c = a + b
+end
+
+"\"hello world\""
