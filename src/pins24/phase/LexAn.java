@@ -179,8 +179,50 @@ public class LexAn implements AutoCloseable {
 				return;
 			}
 
-
 			switch (buffChar) {
+				// Nizi
+				case '"':
+					final StringBuilder str = new StringBuilder();
+					while (true) {
+						nextChar();
+						if (buffChar == '\\') {
+							str.append(parseEscape(true));
+							continue;
+						}
+						if (buffChar == '"') {
+							buffToken = new Token(new Report.Location(line, column, buffCharLine, buffCharColumn), Token.Symbol.STRINGCONST, str.toString());
+							nextChar();
+							break;
+						}
+						if (buffChar == -1 || buffChar == '\n') {
+							throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan niz.");
+						}
+						str.append((char) buffChar);
+					}
+					return;
+
+				// Znaki
+				case '\'':
+					nextChar();
+					if (buffChar == -1) {
+						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
+					}
+					char ch = (char) buffChar;
+					if (ch < 32 || ch > 126) {
+						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Neveljaven znak.");
+					}
+					if (ch == '\\') {
+						ch = parseEscape(false);
+					}
+					nextChar();
+					if (buffChar != '\'') {
+						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
+					}
+					buffToken = new Token(new Report.Location(line, column, buffCharLine, buffCharColumn), Token.Symbol.CHARCONST, Character.toString(ch));
+					nextChar();
+					return;
+
+				// Operatorji in ostali simboli
 				case '=':
 					nextChar();
 					if (buffChar == '=') {
@@ -271,54 +313,23 @@ public class LexAn implements AutoCloseable {
 					buffToken = new Token(new Report.Location(buffCharLine, buffCharColumn), Token.Symbol.DIV, "/");
 					nextChar();
 					return;
+
+				// Komentarji
 				case '#':
 					while (buffChar != '\n' && buffChar != -1)
 						nextChar();
 					break;
-				case '"':
-					final StringBuilder str = new StringBuilder();
-					while (true) {
-						nextChar();
-						if (buffChar == '\\') {
-							str.append(parseEscape(true));
-							continue;
-						}
-						if (buffChar == '"') {
-							buffToken = new Token(new Report.Location(line, column, buffCharLine, buffCharColumn), Token.Symbol.STRINGCONST, str.toString());
-							nextChar();
-							break;
-						}
-						if (buffChar == -1) {
-							throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan niz.");
-						}
-						str.append((char) buffChar);
-					}
-					return;
-				case '\'':
-					nextChar();
-					if (buffChar == -1) {
-						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
-					}
-					char ch = (char) buffChar;
-					if (ch < 32 || ch > 126) {
-						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Neveljaven znak.");
-					}
-					if (ch == '\\') {
-						ch = parseEscape(false);
-					}
-					nextChar();
-					if (buffChar != '\'') {
-						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
-					}
-					buffToken = new Token(new Report.Location(line, column, buffCharLine, buffCharColumn), Token.Symbol.CHARCONST, Character.toString(ch));
-					nextChar();
-					return;
+
+				// Preskoči bele znake
 				case ' ': case '\t': case '\n':
 					nextChar();
 					break;
+
+				// Konec datoteke
 				case -1:
 					buffToken = null;
 					return;
+
 				default:
 					throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nepričakovan znak: '" + (char) buffChar + "'.");
 			}
@@ -326,7 +337,6 @@ public class LexAn implements AutoCloseable {
 	}
 
 	private char parseEscape(boolean isString) {
-		// TODO: finish this
 		nextChar();
 		char ch;
 		if (buffChar == -1) {
