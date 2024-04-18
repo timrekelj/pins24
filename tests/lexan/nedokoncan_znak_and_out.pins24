@@ -1,0 +1,3 @@
+This is PINS'24 compiler (lexical analysis):
+[2.1:2.4] IDENTIFIER(znak)
+:-( [[2.6:2.6]] Nedokončan AND (&&) znak.

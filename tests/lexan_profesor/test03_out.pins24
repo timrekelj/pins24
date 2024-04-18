@@ -1,0 +1,21 @@
+This is PINS'24 compiler (lexical analysis):
+[2.1:2.2] IDENTIFIER(ai)
+[2.3:2.3] ASSIGN
+[2.4:2.5] INTCONST(65)
+[3.1:3.2] IDENTIFIER(ac)
+[3.3:3.3] ASSIGN
+[3.4:3.6] CHARCONST('a')
+[4.1:4.2] IDENTIFIER(as)
+[4.3:4.3] ASSIGN
+[4.4:4.6] STRINGCONST("a")
+[6.1:6.3] IDENTIFIER(nli)
+[6.4:6.4] ASSIGN
+[6.5:6.6] INTCONST(10)
+[7.1:7.3] IDENTIFIER(nlc)
+[7.4:7.4] ASSIGN
+[7.5:7.8] CHARCONST('\n')
+[8.1:8.3] IDENTIFIER(nls)
+[8.4:8.4] ASSIGN
+[8.5:8.8] STRINGCONST("\n")
+[9.1:9.1] EOF
+:-) Done.

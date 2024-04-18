@@ -1,0 +1,10 @@
+This is PINS'24 compiler (lexical analysis):
+[1.1:1.3] FUN
+[1.5:1.7] IDENTIFIER(inc)
+[1.8:1.8] LPAREN
+[1.9:1.9] RPAREN
+[1.10:1.10] ASSIGN
+[1.11:1.11] SUB
+[1.12:1.12] INTCONST(1)
+[2.1:2.1] EOF
+:-) Done.

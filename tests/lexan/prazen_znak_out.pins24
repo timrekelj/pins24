@@ -1,0 +1,4 @@
+This is PINS'24 compiler (lexical analysis):
+[2.1:2.11] IDENTIFIER(prazen_znak)
+[2.13:2.13] ASSIGN
+:-( [[2.16:2.16]] Prazen znak.

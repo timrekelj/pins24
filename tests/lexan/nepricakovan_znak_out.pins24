@@ -1,0 +1,3 @@
+This is PINS'24 compiler (lexical analysis):
+[2.1:2.15] IDENTIFIER(pricakovan_znak)
+:-( [[2.17:2.17]] Nepričakovan znak: '@'.

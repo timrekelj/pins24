@@ -187,7 +187,7 @@ public class LexAn implements AutoCloseable {
 					while (true) {
 						nextChar();
 						if (buffChar == '\\') {
-							str.append(parseEscapeToString(true));
+							str.append(parseEscape(true));
 							continue;
 						}
 						if (buffChar == '"') {
@@ -208,14 +208,16 @@ public class LexAn implements AutoCloseable {
 					final StringBuilder ch = new StringBuilder();
 					ch.append((char)buffChar);
 					nextChar();
-					if (buffChar == -1) {
+					if (buffChar == -1 || buffChar == '\n') {
 						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
 					}
 					if (buffChar < 32 || buffChar > 126) {
 						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Neveljaven znak.");
 					}
 					if (buffChar == '\\') {
-						ch.append(parseEscapeToString(false));
+						ch.append(parseEscape(false));
+					} else if (buffChar == '\'') {
+						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Prazen znak.");
 					} else {
 						ch.append((char) buffChar);
 					}
@@ -248,7 +250,7 @@ public class LexAn implements AutoCloseable {
 						buffToken = new Token(new Report.Location(line, column, buffCharLine, buffCharColumn), Token.Symbol.AND, "&&");
 						nextChar();
 					} else {
-						throw new Report.Error(new Report.Location(line, column), "Nepričakovan znak '" + (char) buffChar + "'.");
+						throw new Report.Error(new Report.Location(line, column), "Nedokončan AND (&&) znak.");
 					}
 					return;
 				case '|':
@@ -257,7 +259,7 @@ public class LexAn implements AutoCloseable {
 						buffToken = new Token(new Report.Location(line, column, buffCharLine, buffCharColumn), Token.Symbol.OR, "||");
 						nextChar();
 					} else {
-						throw new Report.Error(new Report.Location(line, column), "Nepričakovan znak '" + (char) buffChar + "'.");
+						throw new Report.Error(new Report.Location(line, column), "Nedokončan OR (||) znak.");
 					}
 					return;
 				case '!':
@@ -333,7 +335,7 @@ public class LexAn implements AutoCloseable {
 
 				// Konec datoteke
 				case -1:
-					buffToken = null;
+					buffToken = new Token(new Report.Location(buffCharLine, buffCharColumn), Token.Symbol.EOF, "EOF");
 					return;
 
 				default:
@@ -342,7 +344,7 @@ public class LexAn implements AutoCloseable {
 		}
 	}
 
-	private String parseEscapeToString(boolean isString) {
+	private String parseEscape(boolean isString) {
 		nextChar();
 		final StringBuilder ch = new StringBuilder();
 		ch.append('\\');
@@ -352,7 +354,7 @@ public class LexAn implements AutoCloseable {
 		if ((buffChar >= '0' && buffChar <= '9') || (buffChar >= 'A' && buffChar <= 'F')) {
 			ch.append((char) buffChar);
 			nextChar();
-			if (buffChar == -1) {
+			if (buffChar == -1 || buffChar == '\n') {
 				throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
 			}
 			if ((buffChar >= '0' && buffChar <= '9') || (buffChar >= 'A' && buffChar <= 'F')) {
@@ -380,47 +382,6 @@ public class LexAn implements AutoCloseable {
 			}
 		}
 		return ch.toString();
-	}
-
-	// Ker nisem prepričan, če je to pravilno, sem naredil še eno metodo, ki vrne char namesto stringa in pretvori escape znake
-	private char parseEscape(boolean isString) {
-		nextChar();
-		char ch;
-		if (buffChar == -1) {
-			throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
-		}
-		if ((buffChar >= '0' && buffChar <= '9') || (buffChar >= 'A' && buffChar <= 'F')) {
-			String hexChar = String.valueOf((char)buffChar);
-			nextChar();
-			if (buffChar == -1) {
-				throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Nedokončan znak.");
-			}
-			if ((buffChar >= '0' && buffChar <= '9') || (buffChar >= 'A' && buffChar <= 'F')) {
-				hexChar += (char)buffChar;
-				ch = (char) Integer.parseInt(hexChar, 16);
-			} else {
-				throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Neveljaven escape znak.");
-			}
-		} else {
-			if (
-				isString && buffChar == '\"' || // če je escape v stringu in naslednji znak "
-				!isString && buffChar == '\''   // če je escape v char-u in naslednji znak '
-			) {
-				ch = (char) buffChar;
-			} else {
-				switch (buffChar) {
-					case '\\':
-						ch = '\\';
-						break;
-					case 'n':
-						ch = '\n';
-						break;
-					default:
-						throw new Report.Error(new Report.Location(buffCharLine, buffCharColumn), "Neveljaven escape znak.");
-				}
-			}
-		}
-		return ch;
 	}
 
 	/**
@@ -465,8 +426,13 @@ public class LexAn implements AutoCloseable {
 				Report.warning("Unused arguments in the command line.");
 
 			try (LexAn lexAn = new LexAn(cmdLineArgs[0])) {
-				while (lexAn.peekToken() != null)
+				while (true) {
+					if (lexAn.peekToken().symbol() == Token.Symbol.EOF) {
+						System.out.println(lexAn.takeToken());
+						break;
+					}
 					System.out.println(lexAn.takeToken());
+				}
 			}
 
 			// Upajmo, da kdaj pridemo to te tocke.
