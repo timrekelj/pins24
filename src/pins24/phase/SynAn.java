@@ -52,8 +52,97 @@ public class SynAn implements AutoCloseable {
      * Opravi sintaksno analizo celega programa.
      */
     private void parseProgram() {
-        parseAssign(); // TODO: nadomesti z ustrezno metodo
-        return;
+        switch (lexAn.peekToken().symbol()) {
+            case FUN:
+            case VAR:
+                parseDefinition();
+                parseProgram2();
+            case EOF:
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "A definition expected.");
+        }
+    }
+
+    private void parseProgram2() {
+        switch (lexAn.peekToken().symbol()) {
+            case FUN:
+            case VAR:
+                parseProgram();
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseDefinition() {
+        switch (lexAn.peekToken().symbol()) {
+            case FUN:
+                check(Token.Symbol.FUN);
+                check(Token.Symbol.IDENTIFIER);
+                check(Token.Symbol.LPAREN);
+                parseParameters();
+                check(Token.Symbol.RPAREN);
+                parseDefinition2();
+                return;
+            case VAR:
+                check(Token.Symbol.VAR);
+                check(Token.Symbol.IDENTIFIER);
+                check(Token.Symbol.ASSIGN);
+                parseInitializers();
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "A definition expected.");
+        }
+    }
+
+    private void parseDefinition2() {
+        switch (lexAn.peekToken().symbol()) {
+            case ASSIGN:
+                check(Token.Symbol.ASSIGN);
+                parseStatements();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseParameters() {
+        switch (lexAn.peekToken().symbol()) {
+            case IDENTIFIER:
+                check(Token.Symbol.IDENTIFIER);
+                parseParameters2();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseParameters2() {
+        switch (lexAn.peekToken().symbol()) {
+            case COMMA:
+                check(Token.Symbol.COMMA);
+                check(Token.Symbol.IDENTIFIER);
+                parseParameters2();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseStatements() {
+        switch (lexAn.peekToken().symbol()) {
+            case IDENTIFIER:
+                check(Token.Symbol.IDENTIFIER);
+                check(Token.Symbol.ASSIGN);
+                parseVal();
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "An identifier expected.");
+        }
+    }
+
+    private void parseInitializers() {
+
     }
 
     /*
