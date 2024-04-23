@@ -84,5 +84,5 @@ This is PINS'24 compiler (lexical analysis):
 [16.9:16.9] IDENTIFIER(n)
 [16.10:16.10] RPAREN
 [16.11:16.11] ASSIGN
-[17.1:17.1] EOF
+[0.0:0.0] EOF
 :-) Done.

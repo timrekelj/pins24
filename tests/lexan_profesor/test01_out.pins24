@@ -6,5 +6,5 @@ This is PINS'24 compiler (lexical analysis):
 [1.10:1.10] ASSIGN
 [1.11:1.11] SUB
 [1.12:1.12] INTCONST(1)
-[2.1:2.1] EOF
+[0.0:0.0] EOF
 :-) Done.

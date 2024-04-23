@@ -11,7 +11,7 @@
 # - The output file has the same name as the test file with the extension _out.pins24
 
 # Example of usage:
-# ./run_tests.sh LexAn successful.pins24
+# ./run_tests.sh LexAn successful01.pins24
 # ./run_tests.sh LexAn lexan
 # Warning: you have to run the script from the tests/ directory and tests/ directory should be in the root of the project
 # Warning 2: in output files, make sure to add a newline at the end of the file

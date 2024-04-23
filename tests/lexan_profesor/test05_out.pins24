@@ -1,0 +1,7 @@
+This is PINS'24 compiler (lexical analysis):
+[1.1:1.3] VAR
+[1.5:1.5] IDENTIFIER(i)
+[1.6:1.6] ASSIGN
+[1.7:1.7] INTCONST(0)
+[0.0:0.0] EOF
+:-) Done.

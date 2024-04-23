@@ -17,5 +17,5 @@ This is PINS'24 compiler (lexical analysis):
 [8.1:8.3] IDENTIFIER(nls)
 [8.4:8.4] ASSIGN
 [8.5:8.8] STRINGCONST("\n")
-[9.1:9.1] EOF
+[0.0:0.0] EOF
 :-) Done.
