@@ -335,7 +335,7 @@ public class LexAn implements AutoCloseable {
 
 				// Konec datoteke
 				case -1:
-					buffToken = new Token(new Report.Location(buffCharLine, buffCharColumn), Token.Symbol.EOF, "EOF");
+					buffToken = new Token(new Report.Location(0, 0), Token.Symbol.EOF, "EOF");
 					return;
 
 				default:
