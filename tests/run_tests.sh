@@ -32,7 +32,7 @@ function run_test {
 
         echo ""
         echo "   ✕ Actual output (left) and expected output (right):"
-        diff -y $3 /tmp/test_output.pins24
+        diff -y /tmp/test_output.pins24 $3
         echo ""
     fi
 

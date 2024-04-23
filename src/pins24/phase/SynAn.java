@@ -44,8 +44,7 @@ public class SynAn implements AutoCloseable {
     public void parse() {
         parseProgram();
         if (lexAn.peekToken().symbol() != Token.Symbol.EOF)
-            Report.warning(lexAn.peekToken(),
-                    "Unexpected text '" + lexAn.peekToken().lexeme() + "...' at the end of the program.");
+            throw new Report.Error(lexAn.peekToken(), "Unexpected text '" + lexAn.peekToken().lexeme() + "...'.");
     }
 
     /**
@@ -131,18 +130,324 @@ public class SynAn implements AutoCloseable {
 
     private void parseStatements() {
         switch (lexAn.peekToken().symbol()) {
+            // statement
+            case IF:
+            case WHILE:
+            case LET:
+            // expression
             case IDENTIFIER:
-                check(Token.Symbol.IDENTIFIER);
-                check(Token.Symbol.ASSIGN);
-                parseVal();
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+            case LPAREN:
+            // expression prefix: [!, +, -, ^]
+            case NOT:
+            case ADD:
+            case SUB:
+            case PTR:
+                parseStatement();
+                parseStatements2();
                 return;
             default:
-                throw new Report.Error(lexAn.peekToken(), "An identifier expected.");
+                throw new Report.Error(lexAn.peekToken(), "Statement expected.");
+        }
+    }
+
+    private void parseStatements2() {
+        switch (lexAn.peekToken().symbol()) {
+            case COMMA:
+                check(Token.Symbol.COMMA);
+                parseStatements();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseStatement() {
+        switch (lexAn.peekToken().symbol()) {
+            // expression
+            case IDENTIFIER:
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+            case LPAREN:
+            case NOT:
+            case ADD:
+            case SUB:
+            case PTR:
+                parseExpression();
+                parseStatement2();
+                return;
+            case IF:
+                check(Token.Symbol.IF);
+                parseExpression();
+                check(Token.Symbol.THEN);
+                parseStatements();
+                parseStatementsIfElse();
+                return;
+            case WHILE:
+                check(Token.Symbol.WHILE);
+                parseExpression();
+                check(Token.Symbol.DO);
+                parseStatements();
+                check(Token.Symbol.END);
+                return;
+            case LET:
+                check(Token.Symbol.LET);
+                parseStatementDef();
+                check(Token.Symbol.IN);
+                parseStatements();
+                check(Token.Symbol.END);
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "A statement expected.");
+        }
+    }
+
+    private void parseStatement2() {
+        switch (lexAn.peekToken().symbol()) {
+            case ASSIGN:
+                check(Token.Symbol.ASSIGN);
+                parseExpression();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseStatementsIfElse() {
+        switch (lexAn.peekToken().symbol()) {
+            case ELSE:
+                check(Token.Symbol.ELSE);
+                parseStatements();
+                check(Token.Symbol.END);
+                return;
+            case END:
+                check(Token.Symbol.END);
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "An else or end expected.");
+        }
+    }
+
+    private void parseStatementDef() {
+        switch (lexAn.peekToken().symbol()) {
+            case FUN:
+            case VAR:
+                parseDefinition();
+                parseStatementDef2();
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "A variable or function definition expected.");
+        }
+    }
+    private void parseStatementDef2() {
+        switch (lexAn.peekToken().symbol()) {
+            case FUN:
+            case VAR:
+                parseStatementDef();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseExpression() {
+        switch (lexAn.peekToken().symbol()) {
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+                check(lexAn.peekToken().symbol());
+                parseExpression3();
+                return;
+            case IDENTIFIER:
+                check(Token.Symbol.IDENTIFIER);
+                parseExpression2();
+                parseExpression3();
+                return;
+            case LPAREN:
+                check(Token.Symbol.LPAREN);
+                parseExpression();
+                check(Token.Symbol.RPAREN);
+                parseExpression3();
+                return;
+            // prefix operator [!, +, -, ^]
+            case NOT:
+            case ADD:
+            case SUB:
+            case PTR:
+                check(lexAn.peekToken().symbol());
+                parseExpression();
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "An expression expected.");
+        }
+    }
+
+    private void parseNonAssociativeExpression() {
+        switch (lexAn.peekToken().symbol()) {
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+                check(lexAn.peekToken().symbol());
+                return;
+            case IDENTIFIER:
+                check(Token.Symbol.IDENTIFIER);
+                parseExpression2();
+                return;
+            case LPAREN:
+                check(Token.Symbol.LPAREN);
+                parseExpression();
+                check(Token.Symbol.RPAREN);
+                return;
+            // prefix operator [!, +, -, ^]
+            case NOT:
+            case ADD:
+            case SUB:
+            case PTR:
+                check(lexAn.peekToken().symbol());
+                parseExpression();
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "An expression expected.");
+        }
+    }
+
+    private void parseExpression2() {
+        switch (lexAn.peekToken().symbol()) {
+            case LPAREN:
+                check(Token.Symbol.LPAREN);
+                parseArguments();
+                check(Token.Symbol.RPAREN);
+                return;
+            default:
+                // epsilon
+        }
+    }
+    private void parseExpression3() {
+        switch (lexAn.peekToken().symbol()) {
+            // binary operator
+            // associative operators [&&, ||, +, -, *, /, %]
+            case AND:
+            case OR:
+            case ADD:
+            case SUB:
+            case MUL:
+            case DIV:
+            case MOD:
+                check(lexAn.peekToken().symbol());
+                parseExpression();
+                return;
+            // non-associative operators [==, !=, >, <, >=, <=]
+            case EQU:
+            case NEQ:
+            case GTH:
+            case LTH:
+            case GEQ:
+            case LEQ:
+                check(lexAn.peekToken().symbol());
+                parseNonAssociativeExpression();
+                return;
+            // postfix operator [^]
+            case PTR:
+                check(Token.Symbol.PTR);
+                return;
+            default:
+                // epsilon
+        }
+    }
+    private void parseArguments() {
+        switch (lexAn.peekToken().symbol()) {
+            // expression
+            case IDENTIFIER:
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+            case LPAREN:
+            case NOT:
+            case ADD:
+            case SUB:
+            case PTR:
+                parseExpression();
+                parseArguments2();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseArguments2() {
+        switch (lexAn.peekToken().symbol()) {
+            case COMMA:
+                check(Token.Symbol.COMMA);
+                parseExpression();
+                parseArguments2();
+                return;
+            default:
+                // epsilon
         }
     }
 
     private void parseInitializers() {
+        switch (lexAn.peekToken().symbol()) {
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+                parseInitializer();
+                parseInitializers2();
+                return;
+            default:
+                // epsilon
+        }
+    }
 
+    private void parseInitializers2() {
+        switch (lexAn.peekToken().symbol()) {
+            case COMMA:
+                check(Token.Symbol.COMMA);
+                parseInitializer();
+                parseInitializers2();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseInitializer() {
+        switch (lexAn.peekToken().symbol()) {
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+                check(lexAn.peekToken().symbol());
+                parseInitializer2();
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "An initializer expected.");
+        }
+    }
+
+    private void parseInitializer2() {
+        switch (lexAn.peekToken().symbol()) {
+            case MUL:
+                check(Token.Symbol.MUL);
+                parseInitializer3();
+                return;
+            default:
+                // epsilon
+        }
+    }
+
+    private void parseInitializer3() {
+        switch (lexAn.peekToken().symbol()) {
+            case INTCONST:
+            case CHARCONST:
+            case STRINGCONST:
+                check(lexAn.peekToken().symbol());
+                return;
+            default:
+                throw new Report.Error(lexAn.peekToken(), "An initializer expected.");
+        }
     }
 
     /*

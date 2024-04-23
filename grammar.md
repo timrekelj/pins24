@@ -15,14 +15,17 @@ parameters2 -> .
 statements -> statement statements2 .
 statements2 -> comma statements .
 statements2 -> .
+
 statement -> expression statement2 .
 statement -> if expression then statements statementIfElse .
 statement -> while expression do statements end .
 statement -> let statementDef in statements end .
 statement2 -> eq expression .
 statement2 -> .
+
 statementIfElse -> else statements end .
 statementIfElse -> end .
+
 statementDef -> definition statementDef2 .
 statementDef2 -> statementDef .
 statementDef2 -> .
