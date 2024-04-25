@@ -56,7 +56,6 @@ public class SynAn implements AutoCloseable {
             case VAR:
                 parseDefinition();
                 parseProgram2();
-            case EOF:
                 return;
             default:
                 throw new Report.Error(lexAn.peekToken(), "A definition expected.");
@@ -447,61 +446,6 @@ public class SynAn implements AutoCloseable {
                 return;
             default:
                 throw new Report.Error(lexAn.peekToken(), "An initializer expected.");
-        }
-    }
-
-    /*
-     * Metode parseAssign, parseVal in parseAdds predstavljajo
-     * implementacijo sintaksnega analizatorja za gramatiko
-     *
-     * assign -> ID ASSIGN val .
-     * val -> INTCONST ops .
-     * ops -> .
-     * ops -> ADD ops .
-     * ops -> SUB ops .
-     *
-     * Te produkcije _niso_ del gramatike za PINS'24, ampak
-     * so namenjene zgolj in samo ilustraciji, kako se
-     * napise majhen sintaksni analizator.
-     */
-
-    private void parseAssign() {
-        switch (lexAn.peekToken().symbol()) {
-            case IDENTIFIER:
-                check(Token.Symbol.IDENTIFIER);
-                check(Token.Symbol.ASSIGN);
-                parseVal();
-                return;
-            default:
-                throw new Report.Error(lexAn.peekToken(), "An identifier expected.");
-        }
-    }
-
-    private void parseVal() {
-        switch (lexAn.peekToken().symbol()) {
-            case INTCONST:
-                check(Token.Symbol.INTCONST);
-                parseAdds();
-                return;
-            default:
-                throw new Report.Error(lexAn.peekToken(), "An integer constant expected.");
-        }
-    }
-
-    private void parseAdds() {
-        switch (lexAn.peekToken().symbol()) {
-            case ADD:
-                check(Token.Symbol.ADD);
-                parseAdds();
-                return;
-            case SUB:
-                check(Token.Symbol.SUB);
-                parseAdds();
-                return;
-            case EOF:
-                return;
-            default:
-                throw new Report.Error(lexAn.peekToken(), "An operator expected.");
         }
     }
 

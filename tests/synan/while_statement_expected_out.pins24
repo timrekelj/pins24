@@ -1,2 +1,2 @@
-# napaka: while nima statementa
-fun a() = while a do end
+This is PINS'24 compiler (syntax analysis):
+:-( [[2.22:2.24]] Statement expected.
