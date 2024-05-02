@@ -30,17 +30,53 @@ statementDef -> definition statementDef2 .
 statementDef2 -> statementDef .
 statementDef2 -> .
 
-expression -> INTCONST expression3 .
-expression -> CHARCONST expression3 .
-expression -> STRINGONST expression3 .
-expression -> IDENTIFIER expression2 expression3 .
-expression -> prefixOperator expression .
-expression -> op expression cp expression3 .
-expression2 -> op arguments cp .
-expression2 -> .
-expression3 -> postfixOperator .
-expression3 -> binaryOperator expression .
-expression3 -> .
+expression -> orExpression .
+
+orExpression -> andExpression orExpression2 .
+orExpression2 -> OR orExpression .
+orExpression2 -> .
+
+andExpression -> compExpression andExpression2 .
+andExpression2 -> AND andExpression .
+andExpression2 -> .
+
+compExpression -> addExpression compExpression2 .
+compExpression2 -> EQU addExpression .
+compExpression2 -> NEQ addExpression .
+compExpression2 -> LTH addExpression .
+compExpression2 -> GTH addExpression .
+compExpression2 -> LEQ addExpression .
+compExpression2 -> GEQ addExpression .
+compExpression2 -> .
+
+addExpression -> mulExpression addExpression2 .
+addExpression2 -> ADD mulExpression addExpression2 .
+addExpression2 -> SUB mulExpression addExpression2 .
+addExpression2 -> .
+
+mulExpression -> prefixExpression mulExpression2 .
+mulExpression2 -> MUL prefixExpression mulExpression2 .
+mulExpression2 -> DIV prefixExpression mulExpression2 .
+mulExpression2 -> MOD prefixExpression mulExpression2 .
+mulExpression2 -> .
+
+prefixExpression -> postfixExpression .
+prefixExpression -> NOT prefixExpression .
+prefixExpression -> SUB prefixExpression .
+prefixExpression -> ADD prefixExpression .
+prefixExpression -> PTR prefixExpression .
+
+postfixExpression -> primaryExpression postfixExpression2 .
+postfixExpression2 -> PTR postfixExpression2 .
+postfixExpression2 -> .
+
+primaryExpr -> INTCONST .
+primaryExpr -> CHARCONST .
+primaryExpr -> STRINGCONST .
+primaryExpr -> IDENTIFIER primaryExpr2 .
+primaryExpr -> OP expression CP .
+primaryExpr2 -> OP arguments CP .
+primaryExpr2 -> .
 
 arguments -> expression arguments2 .
 arguments -> .
