@@ -124,6 +124,13 @@ public class SynAn implements AutoCloseable {
 
                 if (!inits.isEmpty())
                     endLocation = attrLoc.get(inits.getLast()).location();
+                else {
+                    AST.AtomExpr atomExpr = new AST.AtomExpr(AST.AtomExpr.Type.INTCONST, "0");
+                    attrLoc.put(atomExpr, new Report.Location(0, 0));
+                    AST.Init init = new AST.Init(new AST.AtomExpr(AST.AtomExpr.Type.INTCONST, "1"), atomExpr);
+                    attrLoc.put(init, new Report.Location(0, 0));
+                    inits.add(init);
+                }
 
                 AST.VarDef varDef = new AST.VarDef(varName.lexeme(), inits);
                 attrLoc.put(
