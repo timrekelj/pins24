@@ -515,8 +515,51 @@ public class SemAn {
          */
         private class ResolverVisitor implements AST.FullVisitor<Object, Object> {
 
-            // TODO
+            @SuppressWarnings({ "doclint:missing" })
+            public ResolverVisitor() {
+            }
 
+            private enum Pass {
+                /** Prelet definicij funkcij in spremenljivk. */
+                Defs,
+                /** Prelet vsega razen definicij funkcij in spremenljivk. */
+                Rest,
+            }
+
+            // TODO
+            @Override
+            public Object visit(final AST.AssignStmt assignStmt, final Object arg) {
+                assignStmt.dstExpr.accept(this, arg);
+                assignStmt.srcExpr.accept(this, arg);
+                if (attrAST.attrLVal.get(assignStmt.dstExpr) == null)
+                    throw new Report.Error(
+                        attrAST.attrLoc.get(assignStmt.dstExpr),
+                        "Left-hand side of an assignment must be a variable or expression with VALUEAT operator (postfix ^)."
+                    );
+
+                return null;
+            }
+
+            @Override
+            public Object visit(final AST.VarExpr varExpr, final Object arg) {
+                attrAST.attrLVal.put(varExpr, true);
+                return null;
+            }
+
+            @Override
+            public Object visit(final AST.UnExpr unExpr, final Object arg) {
+                unExpr.expr.accept(this, arg);
+                if (unExpr.oper == AST.UnExpr.Oper.MEMADDR && !(unExpr.expr instanceof AST.VarExpr))
+                    throw new Report.Error(
+                        attrAST.attrLoc.get(unExpr),
+                        "Operand of the MEMADDR operator (prefix ^) must be a variable."
+                    );
+                if (unExpr.oper == AST.UnExpr.Oper.VALUEAT)
+                    attrAST.attrLVal.put(unExpr, true);
+                else
+                    attrAST.attrLVal.put(unExpr, false);
+                return null;
+            }
         }
 
     }

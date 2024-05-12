@@ -19,7 +19,7 @@ public class AST {
 
 	/**
 	 * Vmesnik, ki ga implementirajo vsa vozlisca abstraktnega sintaksnega drevesa.
-	 * 
+	 *
 	 * Ta vmesnik je uporabljen pri definiciji atributa abstraktnega sintaksnega
 	 * drevesa in tako omogoca, da z definicijo novih vmesnikov atribut pripredimo
 	 * razlicnim vozliscem abstraktnega sintaksnega drevesa.
@@ -40,7 +40,7 @@ public class AST {
 
 		/**
 		 * Sprejem obiskovalca.
-		 * 
+		 *
 		 * @param <Result>   Tip rezultata obhoda z obiskovalcem.
 		 * @param <Argument> Tip pomoznega argumenta pri obhodu z obiskovalcem.
 		 * @param visitor    Obiskovalec.
@@ -53,7 +53,7 @@ public class AST {
 
 	/**
 	 * Zaporedje vozlisc abstraktnega sintaksnega drevesa.
-	 * 
+	 *
 	 * @param <ANode> Tip vozlisc abstraktnega sintaksnega drevesa.
 	 */
 	public static class Nodes<ANode extends Node> extends Node implements Iterable<ANode> {
@@ -70,7 +70,7 @@ public class AST {
 
 		/**
 		 * Ustvari zaporedje vozlisc abstraktnega sintaksnega drevesa.
-		 * 
+		 *
 		 * @param nodes Zaporedje vozlisc abstraktnega sintaksnega drevesa.
 		 */
 		@SuppressWarnings("unchecked")
@@ -84,7 +84,7 @@ public class AST {
 
 		/**
 		 * Vrne seznam z vsemi vozlisci abstraktnega sintaksnega drevesa.
-		 * 
+		 *
 		 * @return Seznam z vsemi vozlisci abstraktnega sintaksnega drevesa.
 		 */
 		public List<ANode> getAll() {
@@ -97,7 +97,7 @@ public class AST {
 		/**
 		 * Vrne vozlisce abstraktnega sintaksnega drevesa na podanem mestu v tem
 		 * zaporedju vozlisc abstraktnega sintaksnega drevesa.
-		 * 
+		 *
 		 * @param index Mesto v tem zaporedju vozlisc abstraktnega sintaksnega drevesa.
 		 * @return Vozlisce abstraktnega sintaksnega drevesa na podanem mestu v tem
 		 *         zaporedju vozlisc abstraktnega sintaksnega drevesa.
@@ -109,7 +109,7 @@ public class AST {
 		/**
 		 * Vrne stevilo vozlisc v tem zaporedju vozlisc abstraktnega sintaksnega
 		 * drevesa.
-		 * 
+		 *
 		 * @return Stevilo vozlisc v tem zaporedju vozlisc abstraktnega sintaksnega
 		 *         drevesa.
 		 */
@@ -134,7 +134,7 @@ public class AST {
 
 		/**
 		 * Iterator (brez operacije brisanja) preko tabele vozlisc.
-		 * 
+		 *
 		 * Tabela vozlisc se ne sme spreminjati.
 		 */
 		private final class NodesIterator implements Iterator<ANode> {
@@ -191,7 +191,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo definicijo.
-		 * 
+		 *
 		 * @param name Definirano ime.
 		 */
 		public Def(final String name) {
@@ -208,7 +208,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo samostojno definicijo.
-		 * 
+		 *
 		 * @param name Definirano ime.
 		 */
 		public MainDef(final String name) {
@@ -230,7 +230,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo definicijo funkcije.
-		 * 
+		 *
 		 * @param name  Ime funkcije.
 		 * @param pars  Parametri funkcije.
 		 * @param stmts Stavki telesa funkcije.
@@ -255,7 +255,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo definicijo parametra.
-		 * 
+		 *
 		 * @param name Ime parametra.
 		 */
 		public ParDef(final String name) {
@@ -279,7 +279,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo definicijo spremenljivke.
-		 * 
+		 *
 		 * @param name  Ime spremenljivke.
 		 * @param inits Zacetne vrednosti.
 		 */
@@ -308,7 +308,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo zaceetno vrednost spremenljivke.
-		 * 
+		 *
 		 * @param num   Stevilo ponovitev.
 		 * @param value Vrednost.
 		 */
@@ -351,7 +351,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov stavek, ki je samo izraz.
-		 * 
+		 *
 		 * @param expr Izraz.
 		 */
 		public ExprStmt(final Expr expr) {
@@ -379,7 +379,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov pripreditveni stavek.
-		 * 
+		 *
 		 * @param dstExpr Izraz, ki doloca naslov, kamor se prireja vrednost.
 		 * @param srcExpr Izraz, ki doloca vrednost, ki se prireja.
 		 */
@@ -412,7 +412,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov pogojni stavek.
-		 * 
+		 *
 		 * @param cond      Pogoj.
 		 * @param thenStmts Stavki v pozitivni veji.
 		 * @param elseStmts Stavki v negativni veji.
@@ -444,7 +444,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo zanko.
-		 * 
+		 *
 		 * @param cond  Pogoj.
 		 * @param stmts Stavki telesa zanke.
 		 */
@@ -474,7 +474,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov sestavljeni stavek.
-		 * 
+		 *
 		 * @param defs  Lokalne definicije.
 		 * @param stmts Stavki telesa sestavljenega stavka.
 		 */
@@ -532,7 +532,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov atomarni izraz.
-		 * 
+		 *
 		 * @param type  Tip atomarnega izraza.
 		 * @param value Vrednost.
 		 */
@@ -576,7 +576,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov enomestni izraz.
-		 * 
+		 *
 		 * @param oper Enomestni operator.
 		 * @param expr Podizraz.
 		 */
@@ -639,7 +639,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov dvomestni izraz.
-		 * 
+		 *
 		 * @param oper    Dvomestni operator.
 		 * @param fstExpr Prvi (levi) podizraz.
 		 * @param sndExpr Drugi (desni) podizraz.
@@ -668,7 +668,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo ime v izrazu.
-		 * 
+		 *
 		 * @param name Ime.
 		 */
 		public NameExpr(final String name) {
@@ -685,7 +685,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov dostop do spremenljivke ali parametra.
-		 * 
+		 *
 		 * @param name Ime spremenljivke ali parametra.
 		 */
 		public VarExpr(final String name) {
@@ -709,7 +709,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov funkcijski klic.
-		 * 
+		 *
 		 * @param name Ime funkcije.
 		 * @param args Argumenti klica.
 		 */
@@ -729,7 +729,7 @@ public class AST {
 
 	/**
 	 * Abstraktno sintaksno drevo opremljeno z atributi.
-	 * 
+	 *
 	 * V tem razredu atributov ni, predvideno je, da so dodani v vsakem podrazredu
 	 * tega razreda. Ti podrazredi so definirani v posameznih fazah prevajalnika.
 	 */
@@ -740,7 +740,7 @@ public class AST {
 
 		/**
 		 * Ustvari novo abstraktno sintaksno drevo opremljeno z atributi.
-		 * 
+		 *
 		 * @param ast Abstraktno sintaksno drevo.
 		 */
 		public AttrAST(AST.Node ast) {
@@ -749,7 +749,7 @@ public class AST {
 
 		/**
 		 * Kratek izpis atributov.
-		 * 
+		 *
 		 * @param node        Vozlisce abstraktnega sintaksnega drevesa.
 		 * @param highlighted Ali mora biti izpis poudarjen.
 		 * @return Vrne kratek izpis atributov.
@@ -760,12 +760,12 @@ public class AST {
 
 		/**
 		 * Dolg izpis atributov.
-		 * 
+		 *
 		 * @param indent      Zamik (sorazmeren z globino vozlisca).
 		 * @param highlighted Ali mora biti izpis poudarjen.
 		 * @param node        Vozlisce abstraktnega sintaksnega drevesa.
 		 */
-		public void desc(int indent, final AST.Node node, final boolean highlighted) {
+		public void desc(final int indent, final AST.Node node, final boolean highlighted) {
 			return;
 		}
 
@@ -775,7 +775,7 @@ public class AST {
 
 	/**
 	 * Obiskovalec abstraktnega sintaksnega drevesa.
-	 * 
+	 *
 	 * @param <Result>   Tip rezultata.
 	 * @param <Argument> Tip pomoznega argumenta.
 	 */
@@ -860,7 +860,7 @@ public class AST {
 
 	/**
 	 * Obiskovalec, ki ne naredi obhoda.
-	 * 
+	 *
 	 * @param <Result>   Tip rezultata.
 	 * @param <Argument> Tip pomoznega argmenta.
 	 */
@@ -945,7 +945,7 @@ public class AST {
 
 	/**
 	 * Obiskovalec, ki naredi poln obhod in obisce vsa vozlisca.
-	 * 
+	 *
 	 * @param <Result>   Tip rezultata.
 	 * @param <Argument> Tip pomoznega argumenta.
 	 */
@@ -1059,7 +1059,7 @@ public class AST {
 
 		/**
 		 * Ustvari nov objekt za izpis abstraktnega sintaksnega drevesa.
-		 * 
+		 *
 		 * @param attrAST Abstraktno sintaksno drevo opremljeno z atributi.
 		 */
 		public Logger(final AttrAST attrAST) {
@@ -1075,7 +1075,7 @@ public class AST {
 
 		/**
 		 * Izpise opis vozlisca abstraktnega sintaksnega drevesa in njegove atribute.
-		 * 
+		 *
 		 * @param indent Zamik (sorazmeren z globino vozlisca).
 		 * @param node   Vozlisce.
 		 * @param text   Opis strukture vozlisca.
@@ -1098,7 +1098,7 @@ public class AST {
 
 			/**
 			 * Nacin izpisa abstraktnega sintaksnega drevesa.
-			 * 
+			 *
 			 * @param indent    Zamik (sorazmeren z globino vozlisca).
 			 * @param groupName Ime zaporedja vozlisc.
 			 */
@@ -1106,7 +1106,7 @@ public class AST {
 
 				/**
 				 * Povecanje zamika izpisa izpisa abstraktnega sintaksnega drevesa.
-				 * 
+				 *
 				 * @return Zamaknjen nacin izpisa abstraktnega sintaksnega drevesa.
 				 */
 				public Log advance() {
@@ -1115,7 +1115,7 @@ public class AST {
 
 				/**
 				 * Povecanje zamika izpisa izpisa abstraktnega sintaksnega drevesa.
-				 * 
+				 *
 				 * @param groupName Ime zaporedja vozlisc.
 				 * @return Zamaknjen nacin izpisa abstraktnega sintaksnega drevesa.
 				 */
@@ -1223,7 +1223,8 @@ public class AST {
 
 			@Override
 			public Object visit(final AST.AtomExpr atomExpr, final Log log) {
-				print(log.indent, atomExpr, "\033[1m" + "AtomExpr " + atomExpr.value + "\033[0m");
+				print(log.indent, atomExpr,
+						"\033[1m" + "AtomExpr " + atomExpr.type + "(" + atomExpr.value + ")" + "\033[0m");
 				{
 				}
 				return null;
