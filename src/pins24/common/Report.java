@@ -5,14 +5,14 @@ package pins24.common;
  */
 public class Report {
 
-	/** (Dodano samo zato, da javadoc ne tezi.) */
+	@SuppressWarnings({ "doclint:missing" })
 	private Report() {
 		throw new InternalError();
 	}
 
 	/**
 	 * Opis lokacije v izvorni datoteki.
-	 * 
+	 *
 	 * @param begLine   Zacetna vrstica.
 	 * @param begColumn Zacetni stolpec.
 	 * @param endLine   Koncna vrstica.
@@ -22,12 +22,22 @@ public class Report {
 
 		/**
 		 * Ustvari novo lokacijo, ki opisuje en sam znak izvorne datoteke.
-		 * 
+		 *
 		 * @param line   Vrstica znaka.
 		 * @param column Stolpec znaka.
 		 */
 		public Location(int line, int column) {
 			this(line, column, line, column);
+		}
+
+		/**
+		 * Ustvari novo lokacijo, ki se razteza od ene do druge lokacije.
+		 *
+		 * @param beg Prva lokacija.
+		 * @param end Druga lokacija.
+		 */
+		public Location(Locatable beg, Locatable end) {
+			this(beg.location().begLine, beg.location().begColumn, end.location().endLine, end.location().endColumn);
 		}
 
 		@Override
@@ -50,7 +60,7 @@ public class Report {
 
 		/**
 		 * Vrne lokacijo dela izvorne datoteke, ki ga opisuje objekt.
-		 * 
+		 *
 		 * @return Opis lokacije v izvorni datoteki.
 		 */
 		public Location location();
@@ -59,7 +69,7 @@ public class Report {
 
 	/**
 	 * Izpis splosnega obvestila.
-	 * 
+	 *
 	 * @param message Obvestilo.
 	 */
 	public static void info(final String message) {
@@ -68,7 +78,7 @@ public class Report {
 
 	/**
 	 * Izpis obvestila, ki je vezano na del izvorne datoteke.
-	 * 
+	 *
 	 * @param location Opis lokacije v izvorni datoteki.
 	 * @param message  Obvestilo.
 	 */
@@ -78,7 +88,7 @@ public class Report {
 
 	/**
 	 * Izpis splosnega opozorila.
-	 * 
+	 *
 	 * @param message Opozorilo.
 	 */
 	public static void warning(final String message) {
@@ -87,7 +97,7 @@ public class Report {
 
 	/**
 	 * Izpis opozorila, ki je vezano na del izvorne datoteke.
-	 * 
+	 *
 	 * @param location Opis lokacije v izvorni datoteki.
 	 * @param message  Opozorilo.
 	 */
@@ -97,7 +107,7 @@ public class Report {
 
 	/**
 	 * Napaka.
-	 * 
+	 *
 	 * Objekt tega razreda se vrze v primeru, ko je program odkril napako v izvorni
 	 * datoteki, zaradi katere ni vec mozno nadaljevati z izvajanjem.
 	 */
@@ -106,7 +116,7 @@ public class Report {
 
 		/**
 		 * Ustvari novo napako.
-		 * 
+		 *
 		 * @param message Opis napake.
 		 */
 		public Error(final String message) {
@@ -115,7 +125,7 @@ public class Report {
 
 		/**
 		 * Ustvari novo napako, ki je veznana na del izvorne datoteke.
-		 * 
+		 *
 		 * @param location Opis lokacije v izvorni datoteki.
 		 * @param message  Opis napake.
 		 */
@@ -127,7 +137,7 @@ public class Report {
 
 	/**
 	 * Notranja napaka.
-	 * 
+	 *
 	 * Objekt tega razreda se vze v primeru, ko program zazna notranjo napako.
 	 */
 	@SuppressWarnings("serial")
