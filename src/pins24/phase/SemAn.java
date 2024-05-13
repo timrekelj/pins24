@@ -531,7 +531,7 @@ public class SemAn {
             public Object visit(final AST.AssignStmt assignStmt, final Object arg) {
                 assignStmt.dstExpr.accept(this, arg);
                 assignStmt.srcExpr.accept(this, arg);
-                if (attrAST.attrLVal.get(assignStmt.dstExpr) == null)
+                if (!attrAST.attrLVal.get(assignStmt.dstExpr))
                     throw new Report.Error(
                         attrAST.attrLoc.get(assignStmt.dstExpr),
                         "Left-hand side of an assignment must be a variable or expression with VALUEAT operator (postfix ^)."
@@ -558,6 +558,24 @@ public class SemAn {
                     attrAST.attrLVal.put(unExpr, true);
                 else
                     attrAST.attrLVal.put(unExpr, false);
+                return null;
+            }
+
+            @Override
+            public Object visit(final AST.AtomExpr atomExpr, final Object arg) {
+                attrAST.attrLVal.put(atomExpr, false);
+                return null;
+            }
+
+            @Override
+            public Object visit(final AST.BinExpr binExpr, final Object arg) {
+                attrAST.attrLVal.put(binExpr, false);
+                return null;
+            }
+
+            @Override
+            public Object visit(final AST.CallExpr callExpr, final Object arg) {
+                attrAST.attrLVal.put(callExpr, false);
                 return null;
             }
         }
