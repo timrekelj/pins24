@@ -526,7 +526,6 @@ public class SemAn {
                 Rest,
             }
 
-            // TODO
             @Override
             public Object visit(final AST.AssignStmt assignStmt, final Object arg) {
                 assignStmt.dstExpr.accept(this, arg);
@@ -569,12 +568,15 @@ public class SemAn {
 
             @Override
             public Object visit(final AST.BinExpr binExpr, final Object arg) {
+                binExpr.fstExpr.accept(this, arg);
+                binExpr.sndExpr.accept(this, arg);
                 attrAST.attrLVal.put(binExpr, false);
                 return null;
             }
 
             @Override
             public Object visit(final AST.CallExpr callExpr, final Object arg) {
+                callExpr.args.accept(this, arg);
                 attrAST.attrLVal.put(callExpr, false);
                 return null;
             }
