@@ -203,11 +203,163 @@ public class Memory {
 		 */
 		private class MemoryVisitor implements AST.FullVisitor<Object, Object> {
 
+			int depth = 0;
+			Stack<Integer> varOffset = new Stack<>();
+			Stack<Integer> parOffset = new Stack<>();
+
 			@SuppressWarnings({"doclint:missing"})
 			public MemoryVisitor() {
 			}
 
-			/*** TODO ***/
+			@Override
+			public Object visit(final AST.FunDef funDef, final Object arg) {
+				depth++;
+				varOffset.push(-8);
+				parOffset.push(4);
+
+				funDef.pars.accept(this, arg);
+				funDef.stmts.accept(this, arg);
+
+				varOffset.pop();
+				parOffset.pop();
+
+				defineFun(funDef);
+				depth--;
+				return null;
+			}
+
+			@Override
+			public Object visit(final AST.ParDef parDef, final Object arg) {
+				int offset = parOffset.peek();
+				attrAST.attrParAccess.put(
+					parDef,
+					new Mem.RelAccess(
+						offset,
+						depth,
+						4,
+						null,
+						parDef.name
+					)
+				);
+				parOffset.push(offset + 4);
+				return null;
+			}
+
+			@Override
+			public Object visit(final AST.VarDef varDef, final Object arg) {
+				varDef.inits.accept(this, arg);
+				String name = varDef.name;
+				Vector<Integer> inits = getInits(varDef);
+				int size = getSize(inits);
+
+				attrAST.attrVarAccess.put(
+					varDef,
+					new Mem.AbsAccess(name, size, inits)
+				);
+				return null;
+			}
+
+			@Override
+			public Object visit(final AST.LetStmt letStmt, final Object arg) {
+				letStmt.defs.accept(this, arg);
+
+				List<AST.MainDef> defs = letStmt.defs.getAll();
+				for (AST.MainDef def : defs) {
+					if (def instanceof AST.VarDef) {
+						String name = def.name;
+						Vector<Integer> inits = getInits((AST.VarDef) def);
+						int size = getSize(inits);
+
+						int offset = varOffset.pop() - size;
+						varOffset.push(offset);
+
+						attrAST.attrVarAccess.put(
+								(AST.VarDef) def,
+								new Mem.RelAccess(offset, depth, size, inits, name)
+						);
+					} else {
+						depth++;
+						varOffset.push(-8);
+						parOffset.push(4);
+
+						defineFun((AST.FunDef) def);
+
+						parOffset.pop();
+						varOffset.pop();
+						depth--;
+					}
+				}
+
+				depth++;
+				letStmt.stmts.accept(this, arg);
+				depth--;
+				return null;
+			}
+
+			private void defineFun(AST.FunDef funDef) {
+				List<Mem.RelAccess> pars = new LinkedList<>();
+				List<Mem.RelAccess> vars = new LinkedList<>();
+
+				for (AST.ParDef parDef : funDef.pars.getAll())
+					pars.add(attrAST.attrParAccess.get(parDef));
+
+				for (AST.Stmt stmt : funDef.stmts.getAll()) {
+					if (stmt instanceof AST.LetStmt letStmt) {
+						for (AST.MainDef def : letStmt.defs.getAll())
+							if (def instanceof AST.VarDef varDef)
+								vars.add((Mem.RelAccess) attrAST.attrVarAccess.get(varDef));
+					}
+				}
+
+				int varsSize = 8;
+				for (Mem.RelAccess varDef : vars)
+					varsSize += varDef.size;
+
+				attrAST.attrFrame.put(
+					funDef,
+					new Mem.Frame(
+						funDef.name,
+						depth,
+						pars.size() * 4 + 4,
+						varsSize,
+						pars,
+						vars
+					)
+				);
+			}
+
+			private int getSize(Vector<Integer> inits) {
+				int size = 0;
+				// velikost spremenljivke = število vseh znakov vseh initov
+				for (int i = 1; i < inits.size(); i += inits.get(i + 1) + 2)
+					size += inits.get(i) * inits.get(i + 1) * 4;
+				return size;
+			}
+
+			private Vector<Integer> getInits(AST.VarDef varDef) {
+				List<AST.Init> varDefInits = varDef.inits.getAll();
+				Vector<Integer> inits = new Vector<>();
+				inits.addLast(varDefInits.size());                                // število vseh initov
+				for (AST.Init init : varDefInits) {
+					inits.addLast(Integer.valueOf(init.num.value));               // število ponovitev enega inita
+					switch (init.value.type) {                                    // vrednost enega inita
+						case INTCONST -> {
+							inits.addLast(1);                                  // dolžina enega inita (INT)
+							inits.addLast(decodeIntConst(init.value, attrAST.attrLoc.get(init)));
+						}
+						case CHRCONST -> {
+							inits.addLast(1);                                  // dolžina enega inita (CHAR)
+							inits.addLast(decodeChrConst(init.value, attrAST.attrLoc.get(init)));
+						}
+						case STRCONST -> {
+							Vector<Integer> temp = decodeStrConst(init.value, attrAST.attrLoc.get(init));
+							inits.addLast(temp.size());                           // dolžina enega inita (STRING)
+							inits.addAll(temp);
+						}
+					}
+				}
+				return inits;
+			}
 		}
 	}
 
