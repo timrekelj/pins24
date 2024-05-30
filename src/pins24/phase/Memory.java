@@ -206,6 +206,7 @@ public class Memory {
 			int depth = 0;
 			Stack<Integer> varOffset = new Stack<>();
 			Stack<Integer> parOffset = new Stack<>();
+			Stack<String> funNames = new Stack<>();
 
 			@SuppressWarnings({"doclint:missing"})
 			public MemoryVisitor() {
@@ -216,12 +217,14 @@ public class Memory {
 				depth++;
 				varOffset.push(-8);
 				parOffset.push(4);
+				funNames.push(funDef.name);
 
 				funDef.pars.accept(this, arg);
 				funDef.stmts.accept(this, arg);
 
 				varOffset.pop();
 				parOffset.pop();
+				funNames.pop();
 
 				defineFun(funDef);
 				depth--;
@@ -277,16 +280,6 @@ public class Memory {
 								(AST.VarDef) def,
 								new Mem.RelAccess(offset, depth, size, inits, name)
 						);
-					} else {
-						depth++;
-						varOffset.push(-8);
-						parOffset.push(4);
-
-						defineFun((AST.FunDef) def);
-
-						parOffset.pop();
-						varOffset.pop();
-						depth--;
 					}
 				}
 
@@ -311,6 +304,11 @@ public class Memory {
 					}
 				}
 
+				StringBuilder funName = new StringBuilder();
+				for (String name : funNames)
+					funName.append(name).append(".");
+				funName.append(funDef.name);
+
 				int varsSize = 8;
 				for (Mem.RelAccess varDef : vars)
 					varsSize += varDef.size;
@@ -318,7 +316,7 @@ public class Memory {
 				attrAST.attrFrame.put(
 					funDef,
 					new Mem.Frame(
-						funDef.name,
+						funName.toString(),
 						depth,
 						pars.size() * 4 + 4,
 						varsSize,
